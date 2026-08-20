@@ -9,36 +9,59 @@ use Illuminate\Support\Facades\Storage;
 
 class DesignEditorController extends Controller
 {
-    public function edit()
-    {
-        // Ambil desain milik user yang login atau record pertama sebagai fallback
-        $userId = Auth::id();
-        $design = WeddingDesign::where('user_id', $userId)->first();
-
-        if (!$design) {
-            $design = WeddingDesign::firstOrCreate(
-                ['user_id' => $userId],
-                [
-                    'groom_short'     => 'Dimas',
-                    'bride_short'     => 'Sarah',
-                    'theme'           => 'warm-terracotta',
-                    'canvas_elements' => [],
-                    'canvas_config'   => [
-                        'height'         => 1200,
-                        'bgMode'         => 'solid',
-                        'bgColor'        => '#FDFBF7',
-                        'gradColor1'     => '#FFF5F5',
-                        'gradColor2'     => '#FDE8E8',
-                        'gradDirection'  => 'to bottom',
-                        'globalFont'     => 'font-playfair',
-                        'globalColor'    => '#2D2422'
-                    ]
-                ]
-            );
-        }
+    public function edit(Request $request)
+{
+    $userId = Auth::id();
+    
+    // Jika tombol 'Kanvas Kosong' diklik (?new=1), berikan kanvas kosong murni
+    if ($request->has('new')) {
+        $design = [
+            'groom_short'     => 'Dimas',
+            'bride_short'     => 'Sarah',
+            'theme'           => 'warm-terracotta',
+            'bg_music_title'  => '',
+            'bg_music_url'    => '',
+            'canvas_elements' => [], // Kosong
+            'canvas_config'   => [
+                'height'         => 1200,
+                'bgMode'         => 'solid',
+                'bgColor'        => '#FDFBF7',
+                'gradColor1'     => '#FFF5F5',
+                'gradColor2'     => '#FDE8E8',
+                'gradDirection'  => 'to bottom',
+                'globalFont'     => 'font-playfair',
+                'globalColor'    => '#2D2422'
+            ]
+        ];
 
         return view('dashboard.Editor', compact('design'));
     }
+
+    // Jika bukan kanvas baru, ambil data tersimpan dari DB
+    $design = WeddingDesign::where('user_id', $userId)->first();
+
+    if (!$design) {
+        $design = WeddingDesign::create([
+            'user_id'         => $userId,
+            'groom_short'     => 'Dimas',
+            'bride_short'     => 'Sarah',
+            'theme'           => 'warm-terracotta',
+            'canvas_elements' => [],
+            'canvas_config'   => [
+                'height'         => 1200,
+                'bgMode'         => 'solid',
+                'bgColor'        => '#FDFBF7',
+                'gradColor1'     => '#FFF5F5',
+                'gradColor2'     => '#FDE8E8',
+                'gradDirection'  => 'to bottom',
+                'globalFont'     => 'font-playfair',
+                'globalColor'    => '#2D2422'
+            ]
+        ]);
+    }
+
+    return view('dashboard.Editor', compact('design'));
+}
 
     public function save(Request $request)
     {
