@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\WeddingDesign;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+class DesignEditorController extends Controller
+{
+    public function edit()
+    {
+        // Ambil desain milik user yang login atau record pertama sebagai fallback
+        $userId = Auth::id();
+        $design = WeddingDesign::where('user_id', $userId)->first();
+
+        if (!$design) {
+            $design = WeddingDesign::firstOrCreate(
+                ['user_id' => $userId],
+                [
+                    'groom_short'     => 'Dimas',
+                    'bride_short'     => 'Sarah',
+                    'theme'           => 'warm-terracotta',
+                    'canvas_elements' => [],
+                    'canvas_config'   => [
+                        'height'         => 1200,
+                        'bgMode'         => 'solid',
+                        'bgColor'        => '#FDFBF7',
+                        'gradColor1'     => '#FFF5F5',
+                        'gradColor2'     => '#FDE8E8',
+                        'gradDirection'  => 'to bottom',
+                        'globalFont'     => 'font-playfair',
+                        'globalColor'    => '#2D2422'
+                    ]
+                ]
+            );
+        }
+
+        return view('dashboard.Editor', compact('design'));
+    }
+
+    public function save(Request $request)
+    {
+        $request->validate([
+            'canvas_elements_json' => 'nullable|string',
+            'canvas_config_json'   => 'nullable|string',
+            'audio_file'           => 'nullable|file|mimes:mp3,wav,aac,m4a|max:10240', // Maksimal 10MB
+            'theme'                => 'nullable|string',
+            'bg_music_title'       => 'nullable|string',
+            'bg_music_url'         => 'nullable|string',
+        ]);
+
+        $userId = Auth::id();
+        $design = WeddingDesign::firstOrNew(['user_id' => $userId]);
+
+        // Decode JSON dari canvas
+        $elements = json_decode($request->input('canvas_elements_json'), true) ?? [];
+        $config   = json_decode($request->input('canvas_config_json'), true) ?? [];
+
+        // Penanganan upload file audio jika ada
+        if ($request->hasFile('audio_file')) {
+            if ($design->bg_music_url && Storage::disk('public')->exists(str_replace('/storage/', '', $design->bg_music_url))) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $design->bg_music_url));
+            }
+
+            $file = $request->file('audio_file');
+            $path = $file->store('wedding_audio', 'public');
+            $design->bg_music_url = Storage::url($path);
+            $design->bg_music_title = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        } elseif ($request->filled('bg_music_title')) {
+            $design->bg_music_title = $request->input('bg_music_title');
+            $design->bg_music_url = $request->input('bg_music_url');
+        }
+
+        $design->theme = $request->input('theme', 'warm-terracotta');
+        $design->canvas_elements = $elements;
+        $design->canvas_config = $config;
+        $design->save();
+
+        return redirect()->route('editor')->with([
+            'status_msg'  => 'Desain studio berhasil disimpan ke database!',
+            'status_type' => 'success'
+        ]);
+    }
+}
