@@ -23,7 +23,7 @@ class GuestController extends Controller
         $baseInvitationUrl = url('/undangan');
         $design = [];
 
-        return view('dashboard.DaftarTamu', compact('guests', 'stats', 'baseInvitationUrl', 'design'));
+        return view('dashboard', compact('guests', 'stats', 'baseInvitationUrl', 'design'));
     }
 
     public function store(Request $request)
@@ -40,6 +40,6 @@ class GuestController extends Controller
             'opened' => false,
         ]);
 
-        return redirect()->route('daftartamu')->with('success', 'Tamu berhasil ditambahkan!');
+        return redirect()->route('dashboard')->with('success', 'Tamu berhasil ditambahkan!');
     }
 };

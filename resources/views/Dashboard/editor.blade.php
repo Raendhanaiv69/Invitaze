@@ -216,42 +216,70 @@
         </defs>
     </svg>
 
-    <div class="flex min-h-screen">
+    <!-- BACKDROP OVERLAY UNTUK SIDEBAR NAVIGATION DI MOBILE -->
+    <div id="sidebarOverlay" onclick="toggleMainSidebar()"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity"></div>
 
-        <!-- SIDEBAR NAVIGATION -->
-        @include('layouts.sidebar')
+    <div class="flex min-h-screen lg:h-screen lg:overflow-hidden">
+
+        <!-- SIDEBAR NAVIGATION WRAPPER (Responsive Drawer) -->
+        <div id="sidebarWrapper"
+            class="fixed top-0 bottom-0 left-0 z-40 w-64 -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            @include('layouts.sidebar')
+        </div>
 
         <!-- MAIN WORKSPACE -->
-        <div class="ml-64 w-full flex flex-col h-screen overflow-hidden">
+        <div class="w-full lg:ml-64 flex flex-col min-h-screen lg:h-screen overflow-y-auto lg:overflow-hidden">
 
             <!-- TOP WORKSPACE HEADER -->
             <header
-                class="h-20 bg-white/80 backdrop-blur-md border-b border-rosewarm-100 px-8 flex items-center justify-between z-20 flex-shrink-0">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="font-playfair font-bold text-xl text-darkcharcoal">Studio Editor Kustomisasi Desain
-                            🎨</h1>
-                        <span
-                            class="bg-rosewarm-100 text-rosewarm-500 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Free
-                            Canvas Editor</span>
+                class="min-h-16 lg:h-20 bg-white/80 backdrop-blur-md border-b border-rosewarm-100 px-4 sm:px-8 py-3 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 z-20 flex-shrink-0 sticky top-0">
+
+                <div class="flex items-center gap-3">
+                    <!-- HAMBURGER BUTTON MENU UTAMA (MOBILE ONLY) -->
+                    <button onclick="toggleMainSidebar()"
+                        class="lg:hidden p-2 rounded-xl bg-sand/80 text-darkcharcoal hover:bg-rosewarm-100 transition focus:outline-none">
+                        <i class="ph-bold ph-list text-xl"></i>
+                    </button>
+
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-playfair font-bold text-base sm:text-xl text-darkcharcoal">Studio Editor 🎨
+                            </h1>
+                            <span
+                                class="hidden md:inline-block bg-rosewarm-100 text-rosewarm-500 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Free
+                                Canvas</span>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-warmgray mt-0.5">{{ $design['groom_short'] ?? 'Dimas' }} &
+                            {{ $design['bride_short'] ?? 'Sarah' }} &bull; Custom Canvas
+                        </p>
                     </div>
-                    <p class="text-xs text-warmgray mt-0.5">{{ $design['groom_short'] ?? 'Dimas' }} &
-                        {{ $design['bride_short'] ?? 'Sarah' }} &bull; Custom Audio & Canvas</p>
                 </div>
 
                 <!-- ACTION CONTROLS -->
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 sm:gap-3 ml-auto">
                     <a href="{{ route('daftartamu') ?? '/guests' }}"
-                        class="px-4 py-2.5 rounded-full border border-rosewarm-200 bg-white text-darkcharcoal text-xs font-semibold hover:bg-rosewarm-50 transition shadow-sm flex items-center gap-1.5">
-                        <i class="ph-bold ph-users"></i> Ke Daftar Tamu
+                        class="p-2 sm:px-4 sm:py-2.5 rounded-full border border-rosewarm-200 bg-white text-darkcharcoal text-xs font-semibold hover:bg-rosewarm-50 transition shadow-sm flex items-center gap-1.5"
+                        title="Ke Daftar Tamu">
+                        <i class="ph-bold ph-users text-sm"></i>
+                        <span class="hidden sm:inline">Daftar Tamu</span>
                     </a>
+                    <button type="button" onclick="openLiveWebPreview()"
+                        class="p-2 sm:px-4 sm:py-2.5 rounded-full border border-rosewarm-200 bg-white text-rosewarm-600 text-xs font-semibold hover:bg-rosewarm-50 transition shadow-sm flex items-center gap-1.5"
+                        title="Pratinjau Web Penuh">
+                        <i class="ph-bold ph-arrow-square-out text-sm"></i>
+                        <span class="hidden sm:inline">Pratinjau Web</span>
+                    </button>
                     <button type="button" onclick="clearCanvas()"
-                        class="px-4 py-2.5 rounded-full border border-rosewarm-200 bg-white text-darkcharcoal text-xs font-semibold hover:bg-rosewarm-50 transition shadow-sm flex items-center gap-1.5">
-                        <i class="ph-bold ph-trash"></i> Bersihkan Kanvas
+                        class="p-2 sm:px-4 sm:py-2.5 rounded-full border border-rosewarm-200 bg-white text-darkcharcoal text-xs font-semibold hover:bg-rosewarm-50 transition shadow-sm flex items-center gap-1.5"
+                        title="Bersihkan Kanvas">
+                        <i class="ph-bold ph-trash text-sm"></i>
+                        <span class="hidden sm:inline">Bersihkan</span>
                     </button>
                     <button type="button" onclick="prepareSubmit()"
-                        class="px-5 py-2.5 rounded-full bg-gradient-to-r from-terracotta to-rosewarm-500 hover:opacity-95 text-white text-xs font-semibold flex items-center gap-2 shadow-lg shadow-rosewarm-200 transition">
-                        <i class="ph-bold ph-floppy-disk text-sm"></i> Simpan Perubahan
+                        class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-terracotta to-rosewarm-500 hover:opacity-95 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-rosewarm-200 transition">
+                        <i class="ph-bold ph-floppy-disk text-sm"></i>
+                        <span>Simpan</span>
                     </button>
                 </div>
             </header>
@@ -259,20 +287,21 @@
             <!-- FLASH NOTIFICATION ALERT -->
             @if (session('status_msg') || !empty($status_msg))
                 <div
-                    class="bg-{{ (session('status_type') ?? $status_type) === 'success' ? 'emerald-600' : 'rosewarm-500' }} text-white text-xs font-semibold px-8 py-2.5 flex items-center justify-between flex-shrink-0 transition-all">
+                    class="bg-{{ (session('status_type') ?? $status_type) === 'success' ? 'emerald-600' : 'rosewarm-500' }} text-white text-xs font-semibold px-4 sm:px-8 py-2.5 flex items-center justify-between flex-shrink-0 transition-all">
                     <div class="flex items-center gap-2">
                         <i
                             class="ph-bold {{ (session('status_type') ?? $status_type) === 'success' ? 'ph-check-circle' : 'ph-warning-circle' }} text-base"></i>
                         <span>{{ session('status_msg') ?? $status_msg }}</span>
                     </div>
-                    <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white"><i
-                            class="ph-bold ph-x"></i></button>
+                    <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
                 </div>
             @endif
 
             <!-- MAIN WORKSPACE FORM -->
             <form id="editorForm" action="{{ route('editor.save') }}" method="POST" enctype="multipart/form-data"
-                class="flex-1 flex overflow-hidden">
+                class="flex-1 flex flex-col-reverse lg:flex-row overflow-y-auto lg:overflow-hidden">
                 @csrf
 
                 <input type="hidden" name="theme" id="selectedTheme"
@@ -285,7 +314,7 @@
 
                 <!-- LEFT CONTROL SIDEBAR -->
                 <aside
-                    class="w-[500px] bg-white border-r border-rosewarm-100 flex flex-col z-10 flex-shrink-0 shadow-sm">
+                    class="w-full lg:w-[480px] bg-white border-t lg:border-t-0 lg:border-r border-rosewarm-100 flex flex-col z-10 flex-shrink-0 shadow-sm min-h-[450px] lg:min-h-0">
 
                     <!-- TAB HEADERS -->
                     <div
@@ -313,7 +342,7 @@
                     </div>
 
                     <!-- TAB PANELS CONTENT -->
-                    <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                    <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 custom-scrollbar">
 
                         <!-- TAB 1: TAMBAH ELEMEN TEKS & KOMPONEN -->
                         <div id="panel-add-elements" class="editor-panel space-y-5">
@@ -553,7 +582,7 @@
                                             class="w-11 h-11 rounded-full bg-darkcharcoal text-white flex items-center justify-center shadow-md">
                                             <i class="ph-fill ph-disc text-xl text-rosewarm-300"></i>
                                         </div>
-                                        <div class="max-w-[200px]">
+                                        <div class="max-w-[150px] sm:max-w-[200px]">
                                             <span id="currentMusicLabel"
                                                 class="text-xs font-bold text-darkcharcoal block truncate">{{ $design['bg_music_title'] ?? 'Lagu Terpilih' }}</span>
                                             <span id="musicStatusText" class="text-[10px] text-warmgray">Status: Siap
@@ -617,7 +646,7 @@
                             <div class="bg-rosewarm-50/50 p-4 rounded-2xl border border-rosewarm-100 space-y-3">
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <label class="text-xs font-bold text-darkcharcoal block">Panjang / Tinggi Kanvas
+                                        <label class="text-xs font-bold text-darkcharcoal block">Panjang Kanvas
                                             (Scroll)</label>
                                         <span class="text-[10px] text-warmgray">Atur tinggi total konten undangan</span>
                                     </div>
@@ -643,8 +672,7 @@
                                         class="py-1.5 rounded-lg text-xs font-bold bg-white text-darkcharcoal shadow-sm transition">Warna
                                         Solid</button>
                                     <button type="button" onclick="setBackgroundMode('gradient')" id="btnBgModeGradient"
-                                        class="py-1.5 rounded-lg text-xs font-semibold text-warmgray hover:text-darkcharcoal transition">Gradasi
-                                        (Gradient)</button>
+                                        class="py-1.5 rounded-lg text-xs font-semibold text-warmgray hover:text-darkcharcoal transition">Gradasi</button>
                                 </div>
 
                                 <div id="solidBgControls"
@@ -715,7 +743,7 @@
                                     <div>
                                         <span class="text-xs font-bold text-darkcharcoal block">Ubah Semua Warna
                                             Teks</span>
-                                        <span class="text-[10px] text-warmgray">Terapkan warna ini ke seluruh elemen
+                                        <span class="text-[10px] text-warmgray">Terapkan warna ini ke seluruh
                                             teks</span>
                                     </div>
                                     <input type="color" id="globalTextColorPicker" value="#2D2422"
@@ -730,11 +758,11 @@
 
                 <!-- RIGHT CANVAS: SMARTPHONE LIVE PREVIEW -->
                 <main
-                    class="flex-1 bg-stone-100 flex flex-col items-center justify-center p-6 overflow-y-auto relative">
+                    class="flex-1 bg-stone-100 flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto relative min-h-[640px]">
 
                     <!-- TOP TOOLBAR -->
                     <div
-                        class="mb-2.5 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full border border-rosewarm-200 shadow-sm flex items-center gap-4 text-xs z-30">
+                        class="mb-3 bg-white/95 backdrop-blur-md px-3 sm:px-4 py-1.5 rounded-full border border-rosewarm-200 shadow-sm flex items-center gap-3 sm:gap-4 text-xs z-30">
                         <label
                             class="flex items-center gap-1.5 cursor-pointer select-none text-[11px] font-semibold text-darkcharcoal">
                             <input type="checkbox" id="toggleSnap" checked onchange="toggleSnapMode(this.checked)"
@@ -745,18 +773,19 @@
                         <span class="text-stone-300">|</span>
                         <button type="button" onclick="centerActiveElement()"
                             class="text-warmgray hover:text-terracotta text-[11px] font-medium flex items-center gap-1 transition">
-                            <i class="ph-bold ph-align-center-horizontal text-sm"></i> Ratakan Tengah Elemen Aktif
+                            <i class="ph-bold ph-align-center-horizontal text-sm"></i> Ratakan Tengah
                         </button>
                     </div>
 
                     <!-- Phone Frame -->
                     <div id="previewWrapper"
-                        class="w-[340px] h-[640px] bg-darkcharcoal rounded-[44px] p-3 shadow-2xl border-4 border-stone-800 relative flex flex-col">
+                        class="w-[320px] sm:w-[340px] h-[580px] sm:h-[640px] bg-darkcharcoal rounded-[38px] sm:rounded-[44px] p-2.5 sm:p-3 shadow-2xl border-4 border-stone-800 relative flex flex-col my-auto">
 
-                        <div class="w-32 h-4 bg-stone-900 rounded-b-2xl mx-auto z-30 flex-shrink-0"></div>
+                        <div class="w-28 sm:w-32 h-3.5 sm:h-4 bg-stone-900 rounded-b-2xl mx-auto z-30 flex-shrink-0">
+                        </div>
 
                         <div id="phoneScreen" onclick="deselectAll(event)"
-                            class="w-full flex-1 rounded-[34px] overflow-y-auto custom-scrollbar relative font-playfair transition-all duration-300 min-h-[600px]"
+                            class="w-full flex-1 rounded-[30px] sm:rounded-[34px] overflow-y-auto custom-scrollbar relative font-playfair transition-all duration-300 min-h-[500px]"
                             style="background-color: #FDFBF7;">
 
                             <div id="centerGuideLine"></div>
@@ -774,8 +803,8 @@
                                     <i class="ph-bold ph-plus text-xl text-stone-400"></i>
                                 </div>
                                 <p class="text-xs font-semibold text-stone-500">Kanvas Kosong</p>
-                                <p class="text-[10px] leading-relaxed">Klik menu di sebelah kiri untuk mulai menambahkan
-                                    teks, foto, musik & kartu undangan.</p>
+                                <p class="text-[10px] leading-relaxed">Pilih menu tab untuk mulai menambahkan teks,
+                                    foto, musik & kartu undangan.</p>
                             </div>
 
                             <div id="canvasItemsLayer" class="relative w-full" style="height: 1200px;"></div>
@@ -785,7 +814,7 @@
 
                     <!-- Status Pill -->
                     <div
-                        class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl border border-rosewarm-200 shadow-md flex items-center gap-2.5 text-xs text-warmgray font-semibold">
+                        class="hidden sm:flex absolute bottom-6 right-6 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl border border-rosewarm-200 shadow-md items-center gap-2.5 text-xs text-warmgray font-semibold">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span>Studio Canvas Sync Active</span>
                     </div>
@@ -833,6 +862,21 @@
         const CANVAS_WIDTH = 316;
         const CANVAS_CENTER_X = CANVAS_WIDTH / 2;
         const SNAP_THRESHOLD = 6;
+
+        // FUNGSI TOGGLE SIDEBAR NAVIGASI UTAMA DI LAYAR HP
+        function toggleMainSidebar() {
+            const sidebarWrapper = document.getElementById('sidebarWrapper');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            const isClosed = sidebarWrapper.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebarWrapper.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebarWrapper.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
 
         function toggleSnapMode(enabled) { isSnapEnabled = enabled; }
 
@@ -1248,6 +1292,22 @@
                 renderLayersPanel();
             }
         }
+        function openLiveWebPreview() {
+            // 1. Simpan perubahan elemen & konfigurasi sementara ke LocalStorage
+            const jsonElems = JSON.stringify(canvasElements);
+            const jsonConfig = JSON.stringify(canvasConfig);
+
+            localStorage.setItem('invitaze_saved_elements', jsonElems);
+            localStorage.setItem('invitaze_saved_config', jsonConfig);
+
+            if (currentAudioSrc) {
+                localStorage.setItem('invitaze_bg_music_url', currentAudioSrc);
+            }
+
+            // 2. Buka halaman preview di tab baru
+            const previewUrl = "{{ route('invitation.preview') }}?to=Tamu+Undangan";
+            window.open(previewUrl, '_blank');
+        }
 
         function renderLayersPanel() {
             const list = document.getElementById('elementsLayerList');
@@ -1360,13 +1420,13 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <div class="flex justify-between text-[9px] text-warmgray">
-                                    <span>Geser X (Kiri-Kanan)</span>
+                                    <span>Geser X</span>
                                 </div>
                                 <input type="range" min="0" max="100" value="${item.imgPosX !== undefined ? item.imgPosX : 50}" oninput="fastUpdateImageCrop('${item.id}', 'imgPosX', this.value)" class="w-full accent-terracotta cursor-pointer">
                             </div>
                             <div>
                                 <div class="flex justify-between text-[9px] text-warmgray">
-                                    <span>Geser Y (Atas-Bawah)</span>
+                                    <span>Geser Y</span>
                                 </div>
                                 <input type="range" min="0" max="100" value="${item.imgPosY !== undefined ? item.imgPosY : 50}" oninput="fastUpdateImageCrop('${item.id}', 'imgPosY', this.value)" class="w-full accent-terracotta cursor-pointer">
                             </div>
@@ -1683,44 +1743,28 @@
             renderCanvas();
         }
 
-        // --- SUBMIT & SIMPAN DESAIN KE STORAGE & FORM ---
         function prepareSubmit() {
-            const jsonElems = JSON.stringify(canvasElements);
-            const jsonConfig = JSON.stringify(canvasConfig);
+            // Pastikan array ter-encode dengan benar meskipun kosong
+            const jsonElems = JSON.stringify(canvasElements || []);
+            const jsonConfig = JSON.stringify(canvasConfig || {
+                height: 1200,
+                bgMode: 'solid',
+                bgColor: '#FDFBF7',
+                globalFont: 'font-playfair',
+                globalColor: '#2D2422'
+            });
 
             document.getElementById('canvasElementsJson').value = jsonElems;
             document.getElementById('canvasConfigJson').value = jsonConfig;
 
-            // Simpan juga ke localStorage agar otomatis dibaca langsung oleh halaman Daftar Tamu
             localStorage.setItem('invitaze_saved_elements', jsonElems);
             localStorage.setItem('invitaze_saved_config', jsonConfig);
 
-            alert('✅ Perubahan desain studio berhasil disimpan!');
             document.getElementById('editorForm').submit();
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const isNewCanvas = urlParams.has('new');
-
-            // Jika mode kanvas baru, hapus cache lama di localStorage dan kosongkan elemen
-            if (isNewCanvas) {
-                localStorage.removeItem('invitaze_saved_elements');
-                localStorage.removeItem('invitaze_saved_config');
-                canvasElements = [];
-            } else {
-                // Cek penyimpanan lokal jika bukan mode baru
-                const localElems = localStorage.getItem('invitaze_saved_elements');
-                const localConfig = localStorage.getItem('invitaze_saved_config');
-
-                if (localElems && canvasElements.length === 0) {
-                    try { canvasElements = JSON.parse(localElems); } catch (e) { }
-                }
-                if (localConfig && (!canvasConfig || !canvasConfig.height)) {
-                    try { canvasConfig = JSON.parse(localConfig); } catch (e) { }
-                }
-            }
-
+            // Ambil data langsung dari controller
             updateCanvasHeight(canvasConfig.height || 1200);
 
             if (canvasConfig.bgMode === 'gradient') {
@@ -1731,7 +1775,8 @@
 
             if (canvasConfig.globalFont) {
                 updateGlobalFont(canvasConfig.globalFont);
-                document.getElementById('globalFontFamily').value = canvasConfig.globalFont;
+                const fontSelect = document.getElementById('globalFontFamily');
+                if (fontSelect) fontSelect.value = canvasConfig.globalFont;
             }
 
             if (currentAudioSrc) {
@@ -1742,7 +1787,6 @@
             renderGalleryGrid();
         });
     </script>
-
 </body>
 
 </html>

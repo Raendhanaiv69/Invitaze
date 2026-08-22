@@ -99,132 +99,66 @@ $templates = [
 
 <body class="bg-cream text-stone-800 font-sans antialiased selection:bg-rosewarm-200">
 
+    <!-- OVERLAY UTAMA MOBILE SAAT SIDEBAR AKTIF -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity"></div>
+
     <div class="flex min-h-screen">
-        @include('layouts.sidebar')
+
+        <!-- SIDEBAR DRAWER WRAPPER -->
+        <div id="sidebarWrapper"
+            class="fixed top-0 bottom-0 left-0 z-40 w-64 -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            @include('layouts.sidebar')
+        </div>
 
         <!-- MAIN CONTENT WRAPPER -->
-        <main class="ml-64 w-full min-h-screen flex flex-col">
+        <main class="w-full lg:ml-64 min-h-screen flex flex-col">
 
             <!-- STICKY TOP HEADER -->
             <header
-                class="h-20 bg-white/80 backdrop-blur-md border-b border-rosewarm-100 flex items-center justify-between px-8 sticky top-0 z-10">
-                <div>
-                    <h2 class="font-serif text-xl font-bold text-stone-900">Kustomisasi Desain 🎨</h2>
-                    <p class="text-xs text-warmgray">Pilih gaya visual, atur tipografi, atau buat tema undangan baru
-                        sesuai selera.</p>
-                </div>
-
+                class="min-h-16 lg:h-20 bg-white/80 backdrop-blur-md border-b border-rosewarm-100 flex items-center justify-between px-4 sm:px-8 py-3 sticky top-0 z-20">
+                
                 <div class="flex items-center gap-3">
-                    <a href="<?php echo $base_invitation_url; ?>" target="_blank"
-                        class="px-4 py-2.5 rounded-full border border-rosewarm-200 bg-white text-stone-700 text-xs font-semibold flex items-center gap-2 hover:bg-rosewarm-50 transition shadow-sm">
-                        <i class="ph ph-arrow-square-out text-sm"></i>
-                        Preview Website
-                    </a>
-
-                    <button onclick="document.getElementById('design-form').submit()"
-                        class="px-5 py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center gap-2 transition shadow-sm">
-                        <i class="ph-bold ph-floppy-disk text-sm"></i>
-                        Simpan Perubahan
+                    <!-- HAMBURGER BUTTON (MOBILE ONLY) -->
+                    <button onclick="toggleSidebar()"
+                        class="lg:hidden p-2 rounded-xl bg-sand/80 text-stone-700 hover:bg-rosewarm-100 transition focus:outline-none">
+                        <i class="ph-bold ph-list text-xl"></i>
                     </button>
 
-                    <div class="h-8 w-px bg-rosewarm-100 mx-1"></div>
-
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="w-10 h-10 rounded-full bg-rosewarm-100 border border-rosewarm-200 flex items-center justify-center text-rosewarm-600 font-semibold text-sm">
-                            DS
-                        </div>
-                        <div>
-                            <p class="text-xs font-semibold text-stone-900">Dimas & Sarah</p>
-                            <p class="text-[10px] text-warmgray">18 Desember 2026</p>
-                        </div>
+                    <div>
+                        <h2 class="font-serif text-lg sm:text-xl font-bold text-stone-900 leading-tight">Kustomisasi Desain 🎨</h2>
+                        <p class="text-[11px] sm:text-xs text-warmgray hidden sm:block">Pilih gaya visual, atur tipografi, atau buat tema undangan baru sesuai selera.</p>
                     </div>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a href="<?php echo $base_invitation_url; ?>" target="_blank"
+                        class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-full border border-rosewarm-200 bg-white text-stone-700 text-xs font-semibold flex items-center gap-1.5 hover:bg-rosewarm-50 transition shadow-sm">
+                        <i class="ph ph-arrow-square-out text-sm"></i>
+                        <span class="hidden sm:inline">Preview</span> Web
+                    </a>
+
+                    <a href="{{ route('editor.index') ?? '/editor' }}"
+                        class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+                        <i class="ph-bold ph-pencil-simple text-sm"></i>
+                        <span>Buka Studio</span>
+                    </a>
                 </div>
             </header>
 
             <!-- PAGE CONTENT CONTAINER -->
-            <section class="p-8 space-y-8 flex-1">
-
-                <!-- FORM SETTINGS CARD -->
-                {{-- <form id="design-form" method="POST" action="">
-                    <div class="bg-white p-6 md:p-8 rounded-2xl border border-rosewarm-100 shadow-sm space-y-6">
-                        <div class="border-b border-stone-100 pb-4">
-                            <h3 class="font-serif text-lg font-bold text-stone-900">Pengaturan Dasar Desain Undangan
-                            </h3>
-                            <p class="text-xs text-warmgray mt-0.5">Sesuaikan tipografi dan warna utama undangan web
-                                kamu.</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- NAMA PASANGAN / JUDUL ACARA -->
-                            <div>
-                                <label class="text-[11px] font-bold uppercase tracking-wider text-stone-600">Nama
-                                    Pasangan / Judul</label>
-                                <input type="text" name="event_title"
-                                    value="<?php echo htmlspecialchars($design['title']); ?>"
-                                    class="w-full mt-2 px-4 py-2.5 rounded-xl bg-sand/30 border border-stone-200 text-sm focus:outline-none focus:border-rosewarm-400">
-                            </div>
-
-                            <!-- PILIHAN FONT -->
-                            <div>
-                                <label class="text-[11px] font-bold uppercase tracking-wider text-stone-600">Gaya Font
-                                    Header</label>
-                                <select name="font_family"
-                                    class="w-full mt-2 px-4 py-2.5 rounded-xl bg-sand/30 border border-stone-200 text-sm focus:outline-none focus:border-rosewarm-400">
-                                    <option <?php echo ($design['font'] === 'Playfair Display (Serif Elegan)') ? 'selected' : ''; ?>>Playfair Display (Serif Elegan)</option>
-                                    <option>Cinzel (Classic Royal)</option>
-                                    <option>Plus Jakarta Sans (Modern Minimalist)</option>
-                                    <option>Great Vibes (Handwriting Calligraphy)</option>
-                                </select>
-                            </div>
-
-                            <!-- SKEMA WARNA AKSEN -->
-                            <div>
-                                <label class="text-[11px] font-bold uppercase tracking-wider text-stone-600">Palet Warna
-                                    Aksen</label>
-                                <div class="flex items-center gap-3 mt-3">
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="theme_color" value="#D47355" class="sr-only peer"
-                                            checked>
-                                        <div
-                                            class="w-7 h-7 rounded-full bg-[#D47355] border-2 border-transparent peer-checked:border-stone-900 peer-checked:scale-110 shadow-sm transition">
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="theme_color" value="#556B2F" class="sr-only peer">
-                                        <div
-                                            class="w-7 h-7 rounded-full bg-[#556B2F] border-2 border-transparent peer-checked:border-stone-900 peer-checked:scale-110 shadow-sm transition">
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="theme_color" value="#1E293B" class="sr-only peer">
-                                        <div
-                                            class="w-7 h-7 rounded-full bg-[#1E293B] border-2 border-transparent peer-checked:border-stone-900 peer-checked:scale-110 shadow-sm transition">
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="theme_color" value="#F43F5E" class="sr-only peer">
-                                        <div
-                                            class="w-7 h-7 rounded-full bg-[#F43F5E] border-2 border-transparent peer-checked:border-stone-900 peer-checked:scale-110 shadow-sm transition">
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form> --}}
+            <section class="p-4 sm:p-8 space-y-6 flex-1">
 
                 <!-- TEMPLATE GALLERY SECTION -->
                 <div class="space-y-4">
                     <div>
-                        <h3 class="font-serif text-xl font-semibold text-stone-900">Koleksi Desain Pilihan ✨</h3>
-                        <p class="text-xs text-warmgray mt-0.5">Pilih tema siap pakai atau buat desain dari awal dengan
-                            kanvas kosong.</p>
+                        <h3 class="font-serif text-lg sm:text-xl font-semibold text-stone-900">Koleksi Desain Pilihan ✨</h3>
+                        <p class="text-xs text-warmgray mt-0.5">Pilih tema siap pakai atau buat desain dari awal dengan kanvas kosong.</p>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
 
-                        <!-- KARTU 0: HALAMAN KOSONG / KREASI SENDIRI (BLANK CANVAS) -->
+                        <!-- KARTU: KANVAS KOSONG -->
                         <a href="{{ route('editor', ['new' => 1]) }}"
                             class="group bg-white rounded-2xl border-2 border-dashed border-rosewarm-200 hover:border-rosewarm-400 p-5 flex flex-col justify-between transition hover:shadow-md bg-gradient-to-b from-white to-sand/20 cursor-pointer block">
                             <div class="space-y-4">
@@ -241,12 +175,9 @@ $templates = [
                                 </div>
 
                                 <div>
-                                    <span class="text-[10px] uppercase font-bold tracking-wider text-warmgray">Custom
-                                        Builder</span>
-                                    <h4 class="font-serif text-base font-bold text-stone-900 mt-1 leading-snug">Mulai
-                                        Dari Awal</h4>
-                                    <p class="text-[11px] text-warmgray mt-1 leading-relaxed">Atur layout, ornamen,
-                                        palet warna, dan elemen sesuka hatimu.</p>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-warmgray">Custom Builder</span>
+                                    <h4 class="font-serif text-base font-bold text-stone-900 mt-1 leading-snug">Mulai Dari Awal</h4>
+                                    <p class="text-[11px] text-warmgray mt-1 leading-relaxed">Atur layout, ornamen, palet warna, dan elemen sesuka hatimu.</p>
                                 </div>
                             </div>
 
@@ -259,55 +190,54 @@ $templates = [
                             </div>
                         </a>
 
-                        <!-- TEMPLATE PRESETS LAINNYA -->
+                        <!-- TEMPLATE PRESETS -->
                         <?php foreach ($templates as $t): ?>
                         <div
-                            class="group bg-white rounded-2xl border <?php    echo $t['is_active'] ? 'border-rosewarm-400 ring-2 ring-rosewarm-300/50' : 'border-rosewarm-100'; ?> overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                            class="group bg-white rounded-2xl border <?php echo $t['is_active'] ? 'border-rosewarm-400 ring-2 ring-rosewarm-300/50' : 'border-rosewarm-100'; ?> overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
 
                             <!-- Thumbnail Area -->
                             <div class="relative h-48 overflow-hidden">
-                                <img src="<?php    echo $t['img']; ?>"
-                                    alt="<?php    echo htmlspecialchars($t['title']); ?>"
+                                <img src="<?php echo $t['img']; ?>"
+                                    alt="<?php echo htmlspecialchars($t['title']); ?>"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
 
                                 <div class="absolute top-3 left-3">
                                     <span
-                                        class="px-3 py-1 rounded-full <?php    echo $t['is_active'] ? 'bg-rosewarm-500 text-white' : 'bg-stone-900/80 backdrop-blur-md text-white'; ?> text-[10px] font-semibold tracking-wide shadow-sm">
-                                        <?php    echo $t['tag']; ?>
+                                        class="px-3 py-1 rounded-full <?php echo $t['is_active'] ? 'bg-rosewarm-500 text-white' : 'bg-stone-900/80 backdrop-blur-md text-white'; ?> text-[10px] font-semibold tracking-wide shadow-sm">
+                                        <?php echo $t['tag']; ?>
                                     </span>
                                 </div>
 
                                 <div
                                     class="absolute bottom-3 right-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-2 py-1 rounded-full shadow-sm">
-                                    <?php    foreach ($t['color_dots'] as $color): ?>
+                                    <?php foreach ($t['color_dots'] as $color): ?>
                                     <span class="w-2.5 h-2.5 rounded-full"
-                                        style="background-color: <?php        echo $color; ?>;"></span>
-                                    <?php    endforeach; ?>
+                                        style="background-color: <?php echo $color; ?>;"></span>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
 
                             <!-- Card Info & Actions -->
                             <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
                                 <div>
-                                    <span
-                                        class="text-[10px] uppercase font-bold tracking-wider text-rosewarm-500"><?php    echo $t['category']; ?></span>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-rosewarm-500"><?php echo $t['category']; ?></span>
                                     <h4 class="font-serif text-base font-bold text-stone-900 mt-1 leading-snug">
-                                        <?php    echo htmlspecialchars($t['title']); ?>
+                                        <?php echo htmlspecialchars($t['title']); ?>
                                     </h4>
                                 </div>
 
                                 <div class="pt-3 border-t border-stone-100 flex items-center gap-2">
-                                    <?php    if ($t['is_active']): ?>
+                                    <?php if ($t['is_active']): ?>
                                     <button type="button" disabled
                                         class="w-full py-2 rounded-xl bg-rosewarm-50 text-rosewarm-600 text-xs font-bold flex items-center justify-center gap-1.5 cursor-default">
                                         <i class="ph-bold ph-check"></i> Sedang Digunakan
                                     </button>
-                                    <?php    else: ?>
+                                    <?php else: ?>
                                     <button type="button"
                                         class="w-full py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition">
                                         Gunakan Tema
                                     </button>
-                                    <?php    endif; ?>
+                                    <?php endif; ?>
                                     <button type="button"
                                         class="p-2 rounded-xl bg-sand hover:bg-rosewarm-100 text-stone-700 transition"
                                         title="Live Preview">
@@ -328,6 +258,22 @@ $templates = [
 
     </div>
 
+    <script>
+        // FUNGSI TOGGLE SIDEBAR DI LAYAR MOBILE
+        function toggleSidebar() {
+            const sidebarWrapper = document.getElementById('sidebarWrapper');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            const isClosed = sidebarWrapper.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebarWrapper.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebarWrapper.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 
 </html>
